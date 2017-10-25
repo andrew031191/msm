@@ -1,8 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import cmocean
 from matplotlib.widgets import Button
 import matplotlib.image as mpimg
+try:
+    import cmocean
+    cmap = cmocean.cm.phase
+except ImportError:
+    cmap = plt.cm.jet 
 
 class potts_model():
     """
@@ -63,8 +67,7 @@ class potts_model():
         self.running = False
     def initialise_spin_states(self):
         # random initialise spins
-        self.spin_states = np.random.randint(low=1,high=self.Q+1,size=(self.Nx,self.Ny),\
-                dtype=np.int16)
+        self.spin_states = np.random.randint(low=1,high=self.Q+1,size=(self.Nx,self.Ny))
     def initialise_energy(self):
         """
         calculate initial total energy
@@ -127,8 +130,8 @@ class potts_model():
         return -self.magnetic_strength*np.cos(2.0*np.pi*(self.magnetic_field-spin)/self.Q)
 
     def attempt_single_jump(self):
-        ix = np.random.randint(low=0,high=self.Nx,dtype=np.int32)
-        iy = np.random.randint(low=0,high=self.Ny,dtype=np.int32)
+        ix = np.random.randint(low=0,high=self.Nx)
+        iy = np.random.randint(low=0,high=self.Ny)
 
         # current spin state for grid point
         current_spin = self.spin_states[ix,iy]
@@ -221,7 +224,7 @@ class potts_model():
         self.redraw_interval = int(max([1,self.redraw_interval/2]))
 
     def replot_spinstates(self):
-        self.ax1.imshow(X=self.spin_states,vmin=0,vmax=self.Q,cmap=cmocean.cm.phase)
+        self.ax1.imshow(X=self.spin_states,vmin=0,vmax=self.Q,cmap=cmap)
 
     def view_grid(self,fig,ax1,numsteps_ax):
         self.fig = fig
